@@ -1,4 +1,4 @@
-# ts-metric
+# timescore
 
 Time series metric computation library for **prediction**, **imputation**, **generation**, **anomaly detection**, and **classification** tasks.
 
@@ -7,7 +7,7 @@ PyTorch backend. Supports both **point** (regression) and **probabilistic** (dis
 ## 安装
 
 ```bash
-pip install git+https://github.com/zysongg/ts-metric.git
+pip install git+https://github.com/zysongg/timescore.git
 ```
 
 ## 输入形状约定
@@ -43,7 +43,7 @@ Prediction / Imputation / Generation 指标支持可选 `mask` 参数：
 
 ```python
 import torch
-import ts_metric as tm
+import timescore as tm
 
 B, C, T = 4, 3, 24
 target = torch.randn(B, C, T)
@@ -124,7 +124,7 @@ f1 = tm.classification.f1(labels, preds, average="macro")
 ### MetricCalculator API
 
 ```python
-from ts_metric import MetricCalculator
+from timescore import MetricCalculator
 
 # Prediction point metrics
 calc = MetricCalculator(task="prediction", mode="point", metrics=["MSE", "NRMSE"])
@@ -142,7 +142,7 @@ results = calc.compute(labels, preds)
 per_feat = calc.compute_per_feature(target, forecast)
 
 # List all available metrics
-from ts_metric import list_available_metrics
+from timescore import list_available_metrics
 print(list_available_metrics())
 ```
 
@@ -203,6 +203,6 @@ print(list_available_metrics())
 ## 运行测试
 
 ```bash
-cd ts_metric
+cd timescore
 pytest tests/ -v
 ```

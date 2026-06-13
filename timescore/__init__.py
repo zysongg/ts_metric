@@ -1,9 +1,9 @@
-"""ts_metric: Time series metric computation library.
+"""timescore: Time series metric computation library.
 
 Supports five tasks: prediction, imputation, generation, anomaly detection, classification.
 
 Quick start:
-    import ts_metric as tm
+    import timescore as tm
 
     # Prediction
     mse = tm.prediction.mse(target, forecast)

@@ -2,7 +2,7 @@
 
 import torch
 import pytest
-import ts_metric as tm
+import timescore as tm
 
 
 class TestMetricCalculator:

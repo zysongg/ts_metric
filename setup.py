@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="ts-metric",
-    version="0.1.0",
-    description="Time series metric computation library for prediction, imputation, and generation tasks",
+    name="timescore",
+    version="0.2.0",
+    description="Time series metric computation library for prediction, imputation, generation, anomaly detection, and classification",
     author="songzy",
     python_requires=">=3.8",
     packages=find_packages(),
