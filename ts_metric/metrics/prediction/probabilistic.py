@@ -11,9 +11,32 @@ from ...utils import _prepare_prob, masked_mean, compute_quantiles_torch, DEFAUL
 
 
 def crps(target, samples, mask=None):
-    """Continuous Ranked Probability Score (via quantile loss approximation).
+    """Continuous Ranked Probability Score (exact formula, O(S^2) per point).
 
-    CRPS = 2 * mean over quantiles of quantile_loss(q, target, median)
+    CRPS = E|X - y| - 0.5 * E|X - X'|
+    where X, X' are independent draws from the predictive distribution.
+
+    For S ensemble samples:
+    CRPS = (1/S) sum_s |x_s - y| - (1/(2*S^2)) sum_s sum_{s'} |x_s - x_{s'}|
+    """
+    t, s, m = _prepare_prob(target, samples, mask)
+    B, S, C, T = s.shape
+
+    term1 = torch.abs(s - t.unsqueeze(1)).mean(dim=1)
+
+    s_sorted, _ = s.sort(dim=1)
+    idx = torch.arange(1, S + 1, device=s.device, dtype=s.dtype).view(1, S, 1, 1)
+    weights = (2 * idx - 1 - S) / (S * S)
+    term2 = (weights * s_sorted).sum(dim=1)
+
+    crps_val = term1 - term2
+    return masked_mean(crps_val, m)
+
+
+def crps_quantile(target, samples, mask=None):
+    """CRPS via quantile loss approximation (O(S log S), uses 7 quantile levels).
+
+    CRPS ≈ 2 * mean_q(quantile_loss(q, target, q_pred))
     """
     t, s, m = _prepare_prob(target, samples, mask)
     quantiles = compute_quantiles_torch(s, DEFAULT_QUANTILE_LEVELS)
@@ -111,10 +134,11 @@ def log_likelihood(target, samples, mask=None):
     return masked_mean(ll, m)
 
 
-PROB_METRICS = ["CRPS", "CRPS_sum", "PICP", "QICE", "MSE_median", "MAE_median", "Calibration", "LogLikelihood"]
+PROB_METRICS = ["CRPS", "CRPS_quantile", "CRPS_sum", "PICP", "QICE", "MSE_median", "MAE_median", "Calibration", "LogLikelihood"]
 
 PROB_METRIC_FUNCS = {
     "CRPS": crps,
+    "CRPS_quantile": crps_quantile,
     "CRPS_sum": crps_sum,
     "PICP": picp,
     "QICE": qice,
