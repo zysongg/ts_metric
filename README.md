@@ -164,7 +164,7 @@ print(list_available_metrics())
 | Mode | 指标 | 说明 |
 |------|------|------|
 | point | MSE, RMSE, NRMSE, MAE, MAPE, sMAPE, ND, R2, Correlation | 点预测 |
-| probabilistic | CRPS, CRPS_sum, CRPS_exact, CRPS_sum_exact, MAE_Coverage, MSIS, PICP, QICE, MSE_median, MAE_median, LogLikelihood | 概率预测 |
+| probabilistic | CRPS, CRPS_sum, CRPS_exact, CRPS_sum_exact, MAE_Coverage, MSIS, PICP, QICE, MSE_median, MAE_median, LogLikelihood, EnergyScore, VariogramScore | 概率预测 |
 
 ### Imputation（插补）
 
@@ -199,6 +199,87 @@ print(list_available_metrics())
 - `QuantileLoss`, `wQuantileLoss`, `Coverage` — 与 GluonTS 完全一致
 - `MSE`, `MAPE`, `sMAPE`, `MSIS`, `NRMSE` — 与 GluonTS 完全一致
 - `CRPS`, `CRPS_sum` — 与 K2VAE Evaluator 一致（<2% 聚合差异）
+
+## 高级功能
+
+### 可视化
+
+```python
+import timescore as tm
+
+# Coverage plot: observed vs expected coverage
+ax = tm.plot_coverage(target, samples)
+
+# Quantile loss per level
+ax = tm.plot_quantile_loss(target, samples)
+
+# Calibration (reliability) diagram
+ax = tm.plot_calibration(target, samples)
+
+# Compare CRPS across multiple models
+samples_dict = {"Model A": samples_a, "Model B": samples_b}
+ax = tm.plot_crps_comparison(target, samples_dict)
+```
+
+可选依赖：`pip install matplotlib`
+
+### 导出格式
+
+```python
+calc = tm.MetricCalculator(task="prediction", mode="point")
+results = calc.compute(target, forecast)
+
+# Dict
+d = tm.to_dict(results)          # {"MSE": 0.01, "MAE": 0.08, ...}
+
+# pandas DataFrame
+df = tm.to_dataframe(results)    # metric | value
+
+# JSON
+tm.to_json(results, path="results.json")
+
+# CSV
+tm.to_csv(results, path="results.csv")
+```
+
+### Diebold-Mariano 检验
+
+比较两个预测模型是否有**统计显著**差异：
+
+```python
+result = tm.diebold_mariano(target, forecast_a, forecast_b, loss="mse")
+print(result)
+# {"statistic": -3.42, "p_value": 0.0006, "significant": True}
+
+# 配对 t 检验（多次评估）
+result = tm.paired_t_test(metric_values_a, metric_values_b)
+```
+
+### Per-Horizon 指标
+
+按预测步长分解指标，分析不同 horizon 的表现：
+
+```python
+# Point metrics per horizon
+results = tm.per_horizon(tm.prediction.mse, target, forecast)
+# {0: tensor(0.01), 1: tensor(0.02), ..., T-1: tensor(0.05)}
+
+# Probabilistic metrics per horizon
+results = tm.per_horizon_prob(tm.prediction.crps, target, samples)
+
+# Convert to tensor
+summary = tm.horizon_summary(results)  # shape (T,)
+```
+
+### 多变量概率指标
+
+```python
+# Energy Score: multivariate CRPS
+es = tm.prediction.energy_score(target, samples)
+
+# Variogram Score: dependence structure quality
+vs = tm.prediction.variogram_score(target, samples, p=2)
+```
 
 ## 发布到 PyPI
 

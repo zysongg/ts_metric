@@ -10,7 +10,7 @@ from .probabilistic import (
     quantile_loss, w_quantile_loss,
     coverage, mae_coverage, msis,
     picp, qice, mse_median, mae_median,
-    log_likelihood,
+    log_likelihood, energy_score, variogram_score,
     PROB_METRICS, PROB_METRIC_FUNCS,
 )
 
@@ -21,6 +21,6 @@ __all__ = [
     "quantile_loss", "w_quantile_loss",
     "coverage", "mae_coverage", "msis",
     "picp", "qice", "mse_median", "mae_median",
-    "log_likelihood",
+    "log_likelihood", "energy_score", "variogram_score",
     "point", "probabilistic",
 ]
