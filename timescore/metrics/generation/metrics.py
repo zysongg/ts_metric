@@ -373,6 +373,69 @@ def _compute_fid(act1, act2):
     return torch.tensor(float(fid))
 
 
+def train_ts2vec(real_data, device=None, output_dims=100, batch_size=8, 
+                 lr=0.001, max_train_length=3000, n_iters=None, verbose=False):
+    """Train a TS2Vec encoder on real data for use with C-FID.
+    
+    This follows the TSGBench methodology: train TS2Vec on real training data,
+    then use it to encode both real and generated data for FID computation.
+    
+    Args:
+        real_data: Real time series data, shape (B, C, T) or (B, T, C)
+        device: Device to use (default: cuda if available, else cpu)
+        output_dims: Dimension of learned representations
+        batch_size: Training batch size
+        lr: Learning rate
+        max_train_length: Maximum sequence length for training
+        n_iters: Number of training iterations (default: auto based on data size)
+        verbose: Whether to print training progress
+    
+    Returns:
+        Trained TS2Vec model
+    
+    Example:
+        >>> # Train on your training data
+        >>> ts2vec_model = train_ts2vec(train_real_data)
+        >>> 
+        >>> # Use for C-FID on test data
+        >>> cfid = c_fid(test_real, generated, ts2vec_model=ts2vec_model)
+    """
+    try:
+        from .ts2vec import TS2Vec
+    except ImportError:
+        raise ImportError("TS2Vec not found. Please ensure ts2vec.py is available in the generation directory.")
+    
+    if device is None:
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    elif isinstance(device, str):
+        device = torch.device(device)
+    
+    # Ensure (B, T, C) format for TS2Vec
+    if isinstance(real_data, torch.Tensor):
+        real_data = real_data.detach().cpu().numpy()
+    
+    # Detect format and convert to (B, T, C)
+    if real_data.ndim == 3:
+        B, dim1, dim2 = real_data.shape
+        # Heuristic: if dim1 < dim2, assume (B, C, T) format
+        if dim1 < dim2:
+            real_data = real_data.transpose(0, 2, 1)  # (B, T, C)
+    
+    # Train TS2Vec
+    model = TS2Vec(
+        input_dims=real_data.shape[-1],
+        output_dims=output_dims,
+        device=device,
+        batch_size=batch_size,
+        lr=lr,
+        max_train_length=max_train_length
+    )
+    
+    model.fit(real_data, n_iters=n_iters, verbose=verbose)
+    
+    return model
+
+
 METRICS = ["MDD", "ACD", "SD", "KD", "ED", "DTW", "DS", "PS", "C_FID"]
 
 METRIC_FUNCS = {
