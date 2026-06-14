@@ -1,4 +1,4 @@
-# timescore
+# ts-metric
 
 Time series metric computation library for **prediction**, **imputation**, **generation**, **anomaly detection**, and **classification** tasks.
 
@@ -7,7 +7,7 @@ PyTorch backend. Supports both **point** (regression) and **probabilistic** (dis
 ## 安装
 
 ```bash
-pip install git+https://github.com/zysongg/timescore.git
+pip install git+https://github.com/zysongg/ts-metric.git
 ```
 
 ## 输入形状约定
@@ -43,7 +43,7 @@ Prediction / Imputation / Generation 指标支持可选 `mask` 参数：
 
 ```python
 import torch
-import timescore as tm
+import ts_metric as tm
 
 B, C, T = 4, 3, 24
 target = torch.randn(B, C, T)
@@ -124,7 +124,7 @@ f1 = tm.classification.f1(labels, preds, average="macro")
 ### MetricCalculator API
 
 ```python
-from timescore import MetricCalculator
+from ts_metric import MetricCalculator
 
 # Prediction point metrics
 calc = MetricCalculator(task="prediction", mode="point", metrics=["MSE", "NRMSE"])
@@ -142,7 +142,7 @@ results = calc.compute(labels, preds)
 per_feat = calc.compute_per_feature(target, forecast)
 
 # List all available metrics
-from timescore import list_available_metrics
+from ts_metric import list_available_metrics
 print(list_available_metrics())
 ```
 
@@ -206,7 +206,7 @@ print(list_available_metrics())
 ### 指标评估可视化
 
 ```python
-import timescore as tm
+import ts_metric as tm
 
 # Coverage plot: observed vs expected coverage
 ax = tm.plot_coverage(target, samples)
@@ -227,7 +227,7 @@ ax = tm.plot_crps_comparison(target, samples_dict)
 ### 序列可视化
 
 ```python
-import timescore as tm
+import ts_metric as tm
 
 # Point prediction with lookback
 tm.plot_prediction(forecast, target, inputs, sample_id=0, channel=0)
@@ -348,15 +348,15 @@ twine upload --username __token__ --password pypi-xxxxxxxx dist/*
 
 ```bash
 # 从 PyPI 安装
-pip install timescore
+pip install ts-metric
 
 # 从 TestPyPI 安装
-pip install --index-url https://test.pypi.org/simple/ timescore
+pip install --index-url https://test.pypi.org/simple/ ts-metric
 ```
 
 ## 运行测试
 
 ```bash
-cd timescore
+cd ts-metric
 pytest tests/ -v
 ```

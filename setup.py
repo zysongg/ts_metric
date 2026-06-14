@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="timescore",
+    name="ts-metric",
     version="0.2.0",
     description="Time series metric computation library for prediction, imputation, generation, anomaly detection, and classification",
     author="songzy",

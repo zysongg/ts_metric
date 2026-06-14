@@ -2,7 +2,7 @@
 
 import torch
 import pytest
-import timescore as tm
+import ts_metric as tm
 
 
 class TestPredictionPoint:
