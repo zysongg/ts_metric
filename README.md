@@ -348,10 +348,10 @@ twine upload --username __token__ --password pypi-xxxxxxxx dist/*
 
 ```bash
 # 从 PyPI 安装
-pip install ts-metric
+pip install ts_metric
 
 # 从 TestPyPI 安装
-pip install --index-url https://test.pypi.org/simple/ ts-metric
+pip install --index-url https://test.pypi.org/simple/ ts_metric
 ```
 
 ## 运行测试

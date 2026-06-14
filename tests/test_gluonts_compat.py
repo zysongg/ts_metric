@@ -189,7 +189,7 @@ class TestK2VAECompatibility:
 
     def test_crps_equals_mean_wql(self):
         """crps should be identical to internal _mean_w_quantile_loss."""
-        from timescore.metrics.prediction.probabilistic import _mean_w_quantile_loss
+        from ts_metric.metrics.prediction.probabilistic import _mean_w_quantile_loss
         val_crps = tm.prediction.crps(self.target, self.samples)
         val_wql = _mean_w_quantile_loss(self.target, self.samples)
         assert torch.allclose(val_crps, val_wql, atol=1e-7)
