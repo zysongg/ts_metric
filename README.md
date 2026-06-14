@@ -1,4 +1,4 @@
-# ts-metric
+# ts_metric
 
 Time series metric computation library for **prediction**, **imputation**, **generation**, **anomaly detection**, and **classification** tasks.
 
@@ -7,7 +7,7 @@ PyTorch backend. Supports both **point** (regression) and **probabilistic** (dis
 ## 安装
 
 ```bash
-pip install git+https://github.com/zysongg/ts-metric.git
+pip install git+https://github.com/zysongg/ts_metric.git
 ```
 
 ## 输入形状约定
@@ -357,6 +357,6 @@ pip install --index-url https://test.pypi.org/simple/ ts_metric
 ## 运行测试
 
 ```bash
-cd ts-metric
+cd ts_metric
 pytest tests/ -v
 ```
